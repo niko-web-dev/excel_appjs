@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const isProd = process.env.NODE_ENV === 'production'
 const isDev = !isProd
 
-const fileName = (ext) => isDev ? `bundle.${ext}` : `bundle.[hash].${ext}`
+const filename = (ext) => isDev ? `bundle.${ext}` : `bundle.[hash].${ext}`
 
 const jsLoaders = () => {
   const loaders = [
@@ -18,6 +18,7 @@ const jsLoaders = () => {
       }
     }
   ]
+
   if (isDev) {
     loaders.push('eslint-loader')
   }
@@ -25,13 +26,12 @@ const jsLoaders = () => {
   return loaders
 }
 
-
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   mode: 'development',
   entry: ['@babel/polyfill', './index.js'],
   output: {
-    filename: fileName('js'),
+    filename: filename('js'),
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {
@@ -55,15 +55,14 @@ module.exports = {
         collapseWhitespace: isProd
       }
     }),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, 'src/favicon.ico'),
-          to: path.resolve(__dirname, 'dist')}
-      ]
-    }),
+    new CopyPlugin([
+      {
+        from: path.resolve(__dirname, 'src/favicon.ico'),
+        to: path.resolve(__dirname, 'dist')
+      }
+    ]),
     new MiniCssExtractPlugin({
-      filename: fileName('css')
+      filename: filename('css')
     })
   ],
   module: {
@@ -74,7 +73,7 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              nmr: isDev,
+              hmr: isDev,
               reloadAll: true
             }
           },
